@@ -4,7 +4,7 @@ const FunctionCurrying = () => {
         name: '',
         email: '',
     });
-    const handleChange = (fieldName: string) => (event) => {
+    const handleChange = (fieldName: string) => (event:any) => {
         const { value } = event.target;
         console.log("value changed", value);
         setState((prevState) => ({
@@ -15,6 +15,8 @@ const FunctionCurrying = () => {
     return (
         <>
             <h2>FunctionCurrying</h2>
+            <p>currying is a technique that transforms a function with multiple arguments into a sequence of functions, each taking a single argument. It allows you to create specialized versions of a function by pre-filling some of its arguments.</p>
+            <p> that transforms the function of multiple arguments into several functions of a single argument in sequence. </p>
 
             <div className="form">
                 <label htmlFor="name">Name :  </label>

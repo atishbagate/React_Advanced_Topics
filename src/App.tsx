@@ -13,6 +13,7 @@ import Main from "./Pages/ErrorBoundry/Main";
 import LazyLoading from "./Pages/LazyLoading/LazyLoading";
 import APIMainCalling from "./Pages/APICalling/TryCatch/APIMainCalling";
 import ContextMain from "./Pages/useContext/ContextMain";
+import Debounce from "./Pages/Debounce/index"
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -31,6 +32,7 @@ export const router = createBrowserRouter(
       <Route path="/LazyLoading" element={<LazyLoading />} />
       <Route path="/APIMainCalling" element={<APIMainCalling />} />
       <Route path="/ContextMain" element={<ContextMain />} />
+      <Route path="/debounce" element={<Debounce />} />
     </>
   )
 )
