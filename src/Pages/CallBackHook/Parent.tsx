@@ -24,6 +24,7 @@ const Parent = () => {
     console.log("useEffect called.");
     },[addByTenCallback]);
     
+    console.log("component rendered.");
     return (
         <>
         <h2>Parent Component</h2>

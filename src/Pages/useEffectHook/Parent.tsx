@@ -5,11 +5,13 @@ import Child from "./Child";
 const ParentUseEffect = () => {
 
     const [toggle,setToggle] = useState(true);
-    const toggleHandler = (e) => setToggle(!toggle);
+
+    const toggleHandler = () => setToggle(!toggle);
+
+
     useEffect(()=>{
         console.log("toggle click",toggle);
-        
-    },[toggle])
+    },[toggle]);
     return (
         <>
         <h2>ParentUseEffect Component</h2> 

@@ -5,14 +5,20 @@ const UseRefChild3 = () => {
 
     const [count,setCount] = useState(0);
     const counterRef = useRef(0);
-
+    
     useEffect(()=> {
         console.log("called once");
         setInterval(function(){
             console.log("inside interval",counterRef.current);
-            
         },1000);
-        
+
+        // const interval = setInterval(function(){
+        //     console.log("inside interval",counterRef.current);
+        // },1000);
+
+        // return () => {
+        //     clearInterval(interval);
+        // }
     },[]);
 
     function handleclick(){
@@ -20,6 +26,9 @@ const UseRefChild3 = () => {
         setCount(newVal);
         counterRef.current = newVal;
     }
+    console.log("component rendered.");
+    
+   
 
     return (
         <>

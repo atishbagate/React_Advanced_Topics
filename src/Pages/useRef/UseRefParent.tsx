@@ -12,7 +12,7 @@ const UseRefParent = () => {
             and useState renders the component.
         </p>
         {/* <UseRefChild /> */}
-        <UseRefChild2 />
+        {/* <UseRefChild2 /> */}
         {/* <UseRefChild3 /> */}
         </>
     )

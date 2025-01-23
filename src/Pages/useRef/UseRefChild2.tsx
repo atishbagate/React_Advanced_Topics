@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import { useRef } from "react";
+import { DetailedHTMLProps, useRef } from "react";
 
 const UseRefChild2 = () => {
     const firstRef = useRef<DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>>();
@@ -8,11 +8,12 @@ const UseRefChild2 = () => {
         console.log("Handle Click");
         
         const element = firstRef.current;
-        element.style.color = "green";
+        element.style.color = "red";
     }
+    console.log("component rendered.")
     return (
         <> 
-        <div ref={firstRef} className="RefDiv">
+        <div ref={firstRef} className="RefDiv mt-5">
         <p> Use Ref Hook </p>
         <Button onClick={handleClick}>Click to Ref</Button>
         </div>
