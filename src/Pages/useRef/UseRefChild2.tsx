@@ -10,7 +10,7 @@ const UseRefChild2 = () => {
         const element = firstRef.current;
         element.style.color = "red";
     }
-    console.log("component rendered.")
+    console.log("2nd child component rendered.")
     return (
         <> 
         <div ref={firstRef} className="RefDiv mt-5">

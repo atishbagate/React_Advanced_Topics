@@ -5,10 +5,11 @@ import { Button } from "@mui/material";
 const Parent = () => {
 
     const [count,setCount] = useState(0);
+    const [reloadUI,setReloadUI] = useState(false);
 
-    // const counter = () => {
-    //     setCount((preValue)=> preValue + 1);
-    // }
+    const counter = () => {
+        setCount((preValue)=> preValue + 1);
+    }
     
     const counterCallback = useCallback(
         ()=>{
@@ -21,8 +22,14 @@ const Parent = () => {
         setCount((preValue) => preValue + 10 );
     },[]);
     useEffect(() => {
-    console.log("useEffect called.");
+    console.log("addByTenCallback useEffect called.");
     },[addByTenCallback]);
+    
+    // function to reload data.
+    const reladUIHandler = useCallback(()=>{ 
+        console.log("UI relaod callback executed.")
+    },[reloadUI])
+    
     
     console.log("component rendered.");
     return (
@@ -30,7 +37,7 @@ const Parent = () => {
         <h2>Parent Component</h2>
         <h4>{count}</h4>
         <br /> 
-        <Button onClick={counterCallback}>Parent callback Button</Button>
+        <Button onClick={counter}>Parent callback Button</Button>
         <Child addByTenCallback={addByTenCallback}  counterCallback={counterCallback}/>
 
         <br />

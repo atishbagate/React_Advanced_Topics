@@ -14,7 +14,7 @@ const UseRefChild = () => {
         console.log("State: " ,count);
         console.log("ref: ",countRef.current);
     }
-    console.log("component render");
+    console.log("child 1 component render");
 
     return (
         <>

@@ -8,17 +8,17 @@ const UseRefChild3 = () => {
     
     useEffect(()=> {
         console.log("called once");
-        setInterval(function(){
-            console.log("inside interval",counterRef.current);
-        },1000);
-
-        // const interval = setInterval(function(){
+        // setInterval(function(){
         //     console.log("inside interval",counterRef.current);
         // },1000);
 
-        // return () => {
-        //     clearInterval(interval);
-        // }
+        const interval = setInterval(function(){
+            console.log("inside interval",counterRef.current);
+        },1000);
+
+        return () => {
+            clearInterval(interval); 
+        }
     },[]);
 
     function handleclick(){
