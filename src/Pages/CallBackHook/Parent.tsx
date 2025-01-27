@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import Child from "./Child"
 import { Button } from "@mui/material";
+import Example2 from "./example2";
+import Example3 from "./example3";
 
 const Parent = () => {
 
@@ -41,6 +43,9 @@ const Parent = () => {
         <Child addByTenCallback={addByTenCallback}  counterCallback={counterCallback}/>
 
         <br />
+
+        {/* <Example2 /> */}
+        <Example3 />
         </>
     )
 }
