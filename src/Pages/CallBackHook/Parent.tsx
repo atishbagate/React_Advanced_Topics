@@ -33,7 +33,7 @@ const Parent = () => {
     },[reloadUI])
     
     
-    console.log("component rendered.");
+    // console.log("component rendered.");
     return (
         <>
         <h2>Parent Component</h2>
@@ -45,7 +45,7 @@ const Parent = () => {
         <br />
 
         {/* <Example2 /> */}
-        <Example3 />
+        {/* <Example3 /> */}
         </>
     )
 }

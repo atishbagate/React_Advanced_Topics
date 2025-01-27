@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 
+// child component 
 const Child2 = React.memo(({incrementHandle}) => {
     console.log("child component render.");
     return (
@@ -10,6 +11,7 @@ const Child2 = React.memo(({incrementHandle}) => {
     )
 });
 
+//parent component 
 const Example2 = () => {
 
     console.log("parent component render.");
@@ -17,7 +19,8 @@ const Example2 = () => {
      
     const incrementHandler = useCallback(()=>{
         setCount((prev)=>prev+1);
-    },[]);
+    },[]); 
+      
 
     return (
         <>
