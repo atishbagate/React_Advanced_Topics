@@ -45,6 +45,7 @@ const ChildUseReducer2 = () => {
                 <h2>ChildUseReducer2</h2>
                 <h3>time =  {state.time}</h3>
                 <Button variant="contained" className="mr-3 pl-4" onClick={() => dispatch({ type: 'start' })}>Start</Button>
+                <Button variant="contained" className="mr-3 pl-4" onClick={() => dispatch({ type: 'tick' })}>Tick</Button>
                 <Button variant="contained" className="mr-3 pl-4" onClick={() => dispatch({ type: 'stop' })}>Stop</Button>
                 <Button variant="contained" className="mr-3 pl-4" onClick={() => dispatch({ type: 'reset' })}>Reset</Button>
             </div>

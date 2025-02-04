@@ -9,7 +9,8 @@ const ParentUseReducer = () => {
             <p>The useReducer(reducer, initialState) hook accepts 2 arguments: the reducer function and the initial state. The hook then returns an array of 2 items: the current state and the dispatch function.</p>
             <p>const [state, dispatch] = useReducer(reducer, initialState);</p>
             {/* <ChildUseReducer1 /> */}
-            {/* <ChildUseReducer2 /> */}
+            <br></br>
+            <ChildUseReducer2 />
         </>
     )
 }

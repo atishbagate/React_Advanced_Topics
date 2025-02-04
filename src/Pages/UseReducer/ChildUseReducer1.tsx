@@ -32,11 +32,15 @@ function reducer(state: State, action: Action): State {
 }
 const ChildUseReducer1 = () => {
     const [state, dispatch] = useReducer(reducer,{count:0,error:null});
+    console.log("component render");
+    
     return (
         <>
+        <br />
             <h2>ChildUseReducer1</h2>
             <div className="">count : {state.count}</div>
             {state.error && <div className="mb-2 text-red-500">{state.error}</div>}
+            <br></br>
             <Button  className="" variant="contained" onClick={()=>{dispatch({type: 'increment'})
             }}>Increment</Button>
             <Button variant="contained" onClick={()=>{dispatch({type: 'decrement'})}}>decrement</Button>
