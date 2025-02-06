@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 const useApiHook = (url: string) => {
     const [data, setData] = useState({
-        data: [],
+        data: []
     });
     useEffect(() => {
         async function fetchData() {
@@ -17,11 +17,10 @@ const useApiHook = (url: string) => {
             }
         }
         fetchData();
-    }, []);
+    }, [url]);
     
     return {
-        data,
-
+        data
     }
 
 }

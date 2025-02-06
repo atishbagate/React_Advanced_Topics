@@ -3,12 +3,12 @@ import  useCounterHook from "./useCounterHook";
 
 const ChildCustomHook1 = () => {
    const [num,setNum] = useState(10);
-    const  value = useCounterHook(num);
-    console.log("data: ", value);
+    const  {numEvenOrOdd,sqrtFun} = useCounterHook(num);
+     
     useEffect(()=>{ 
         console.log("useEffect..");
         
-        value.numEvenOrOdd;
+         numEvenOrOdd;
     },[num]);
     const submitHandler = (e:unknown) => { 
         setNum(e.target.value);
@@ -18,9 +18,9 @@ const ChildCustomHook1 = () => {
             <h4>ChildCustomHook1</h4>
             <p>The below component is the custom hook for calculation.</p>
             <div> 
-                    <label htmlFor="num">Number = {num}</label>
-                    <p>and its squareRoot is = {value.sqrtFun(num)} and - {value.numEvenOrOdd(num)}</p>
                     <input value={num} onChange={submitHandler} type="number" id="num"/><br /> 
+                    <label htmlFor="num">Number = {num}</label>
+                    <p>and its squareRoot is = {sqrtFun(num)} and - {numEvenOrOdd(num)}</p>
             </div>
         </>
     )
