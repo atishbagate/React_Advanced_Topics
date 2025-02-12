@@ -25,7 +25,7 @@ export const router = createBrowserRouter(
       <Route path="/useEffect" element={<ParentUseEffect />} />
       <Route path="/useRefParent" element={<UseRefParent />} />
       <Route path="/useMemo" element={<ParentUseMemo />} />
-      <Route path="/parent" element={<Parent />} />
+      <Route path="/useCallBack" element={<Parent />} />
       <Route path="/ParentUseReducer" element={<ParentUseReducer />} />
       <Route path="/ParentCustomHok" element={<ParentCustomHok />} />
       <Route path="/FunctionCurrying" element={<FunctionCurrying />} />
