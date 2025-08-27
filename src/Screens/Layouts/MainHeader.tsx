@@ -7,9 +7,7 @@ import {
   Button,
   Box,
   Breadcrumbs,
-  Link,
-  useTheme,
-
+  Link
 } from '@mui/material';
 import {
   Home as HomeIcon,
@@ -20,8 +18,6 @@ import {
 const MainHeader: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const theme = useTheme();
-
 
   const getPageTitle = (pathname: string) => {
     const pathMap: { [key: string]: string } = {
@@ -39,7 +35,27 @@ const MainHeader: React.FC = () => {
       '/APIMainCalling': 'API Integration',
       '/ContextMain': 'useContext Hook',
       '/debounce': 'Debouncing',
-      '/lifecycle': 'Component Lifecycle'
+      '/lifecycle': 'Component Lifecycle',
+      
+      // Design Patterns
+      '/patterns/1_Custom_Hook_Pattern': 'Custom Hook Pattern',
+      '/patterns/2_Container_and_Presentation_Pattern': 'Container & Presentation Pattern',
+      '/patterns/3_Provider_Pattern': 'Provider Pattern',
+      '/patterns/4_controlled_uncontrolled_component_pattern': 'Controlled vs Uncontrolled Components',
+      '/patterns/5_Compound_Components_patterns': 'Compound Components Pattern',
+      '/patterns/6_Slot_Children_as_Props': 'Slot Children as Props Pattern',
+      '/patterns/7_Render_Props': 'Render Props Pattern',
+      '/patterns/7_Render_Props_2': 'Toggle Render Props Pattern',
+      '/patterns/8_Polymorphic_Components_Pattern': 'Polymorphic Components Pattern',
+      '/patterns/9_State_Reducer_Pattern': 'State Reducer Pattern',
+      '/patterns/10_State_Machine_Pattern': 'State Machine Pattern',
+      '/patterns/10_State_Machine_Pattern_Form': 'Form State Machine Pattern',
+      '/patterns/11_Factory_Components_Pattern': 'Factory Components Pattern',
+      
+      // React 19 Features
+      '/react19': 'React 19 Features',
+      '/react19/actions': 'Actions in React 19',
+      '/react19/simple-actions': 'Simple Actions Demo'
     };
     return pathMap[pathname] || 'React Topic';
   };
@@ -95,7 +111,7 @@ const MainHeader: React.FC = () => {
               WebkitTextFillColor: 'transparent'
             }}
           >
-            React Advanced Topics
+            React Advanced Topics & Design Patterns
           </Typography>
         </Box>
 
@@ -123,7 +139,7 @@ const MainHeader: React.FC = () => {
               '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
             }}
           >
-                          Dashboard
+            Dashboard
           </Button>
         </Box>
       </Toolbar>

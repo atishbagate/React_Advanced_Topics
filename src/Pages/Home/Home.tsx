@@ -11,9 +11,7 @@ import {
   Button,
   Chip,
   Paper,
-
-  useTheme,
-
+  useTheme
 } from '@mui/material';
 import {
   Code as CodeIcon,
@@ -22,7 +20,9 @@ import {
   Api as ApiIcon,
   Psychology as PsychologyIcon,
   School as SchoolIcon,
-  Build as BuildIcon
+  Build as BuildIcon,
+  Architecture as ArchitectureIcon,
+  Rocket as RocketIcon
 } from '@mui/icons-material';
 
 interface TopicCard {
@@ -38,9 +38,16 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
 
-
   const topics: TopicCard[] = [
     // Core Hooks
+    {
+      title: 'Counter Example',
+      description: 'Basic counter implementation demonstrating React state management',
+      path: '/counter',
+      icon: <BuildIcon />,
+      category: 'Core Hooks',
+      difficulty: 'Beginner'
+    },
     {
       title: 'useEffect Hook',
       description: 'Learn about side effects, cleanup, and dependency management in React components',
@@ -150,10 +157,142 @@ const Home: React.FC = () => {
       icon: <SchoolIcon />,
       category: 'Utility Concepts',
       difficulty: 'Intermediate'
+    },
+
+    // Design Patterns
+    {
+      title: 'Custom Hook Pattern',
+      description: 'Create reusable custom hooks for common functionality',
+      path: '/patterns/1_Custom_Hook_Pattern',
+      icon: <ArchitectureIcon />,
+      category: 'Design Patterns',
+      difficulty: 'Intermediate'
+    },
+    {
+      title: 'Container & Presentation Pattern',
+      description: 'Separate logic from presentation for better maintainability',
+      path: '/patterns/2_Container_and_Presentation_Pattern',
+      icon: <ArchitectureIcon />,
+      category: 'Design Patterns',
+      difficulty: 'Intermediate'
+    },
+    {
+      title: 'Provider Pattern',
+      description: 'Use Context API to provide data throughout component tree',
+      path: '/patterns/3_Provider_Pattern',
+      icon: <ArchitectureIcon />,
+      category: 'Design Patterns',
+      difficulty: 'Intermediate'
+    },
+    {
+      title: 'Controlled vs Uncontrolled',
+      description: 'Understand the difference between controlled and uncontrolled components',
+      path: '/patterns/4_controlled_uncontrolled_component_pattern',
+      icon: <ArchitectureIcon />,
+      category: 'Design Patterns',
+      difficulty: 'Intermediate'
+    },
+    {
+      title: 'Compound Components Pattern',
+      description: 'Create components that work together as a single unit',
+      path: '/patterns/5_Compound_Components_patterns',
+      icon: <ArchitectureIcon />,
+      category: 'Design Patterns',
+      difficulty: 'Advanced'
+    },
+    {
+      title: 'Slot Children as Props',
+      description: 'Pass components as props for flexible component composition',
+      path: '/patterns/6_Slot_Children_as_Props',
+      icon: <ArchitectureIcon />,
+      category: 'Design Patterns',
+      difficulty: 'Advanced'
+    },
+    {
+      title: 'Render Props Pattern',
+      description: 'Share code between components using a prop whose value is a function',
+      path: '/patterns/7_Render_Props',
+      icon: <ArchitectureIcon />,
+      category: 'Design Patterns',
+      difficulty: 'Advanced'
+    },
+    {
+      title: 'Toggle Render Props',
+      description: 'Advanced render props pattern with toggle functionality',
+      path: '/patterns/7_Render_Props_2',
+      icon: <ArchitectureIcon />,
+      category: 'Design Patterns',
+      difficulty: 'Advanced'
+    },
+    {
+      title: 'Polymorphic Components',
+      description: 'Create components that can render as different HTML elements',
+      path: '/patterns/8_Polymorphic_Components_Pattern',
+      icon: <ArchitectureIcon />,
+      category: 'Design Patterns',
+      difficulty: 'Advanced'
+    },
+    {
+      title: 'State Reducer Pattern',
+      description: 'Allow users to control state changes through reducer functions',
+      path: '/patterns/9_State_Reducer_Pattern',
+      icon: <ArchitectureIcon />,
+      category: 'Design Patterns',
+      difficulty: 'Advanced'
+    },
+    {
+      title: 'State Machine Pattern',
+      description: 'Manage complex state transitions using finite state machines',
+      path: '/patterns/10_State_Machine_Pattern',
+      icon: <ArchitectureIcon />,
+      category: 'Design Patterns',
+      difficulty: 'Advanced'
+    },
+    {
+      title: 'Form State Machine',
+      description: 'Advanced form handling with state machine pattern',
+      path: '/patterns/10_State_Machine_Pattern_Form',
+      icon: <ArchitectureIcon />,
+      category: 'Design Patterns',
+      difficulty: 'Advanced'
+    },
+    {
+      title: 'Factory Components Pattern',
+      description: 'Create components dynamically based on configuration or props',
+      path: '/patterns/11_Factory_Components_Pattern',
+      icon: <ArchitectureIcon />,
+      category: 'Design Patterns',
+      difficulty: 'Advanced'
+    },
+
+    // React 19 Features
+    {
+      title: 'React 19 Features',
+      description: 'Explore the latest features and improvements in React 19',
+      path: '/react19',
+      icon: <RocketIcon />,
+      category: 'React 19 Features',
+      difficulty: 'Advanced'
+    },
+    {
+      title: 'Actions in React 19',
+      description: 'Learn about the new Actions API for form handling and mutations',
+      path: '/react19/actions',
+      icon: <RocketIcon />,
+      category: 'React 19 Features',
+      difficulty: 'Advanced'
+    },
+    {
+      title: 'Simple Actions Demo',
+      description: 'Simple examples demonstrating React 19 Actions functionality',
+      path: '/react19/simple-actions',
+      icon: <RocketIcon />,
+      category: 'React 19 Features',
+      difficulty: 'Intermediate'
     }
   ];
 
-  const categories = ['Core Hooks', 'Custom Hooks', 'Advanced Patterns', 'Utility Concepts'];
+  const categories = ['Core Hooks', 'Custom Hooks', 'Advanced Patterns', 'Utility Concepts', 'Design Patterns', 'React 19 Features'];
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -185,10 +324,10 @@ const Home: React.FC = () => {
             mb: 2
           }}
         >
-          React Advanced Topics
+          React Advanced Topics & Design Patterns
         </Typography>
         <Typography variant="h5" color="text.secondary" sx={{ mb: 3 }}>
-          Master React concepts through interactive examples and practical implementations
+          Master React concepts, advanced patterns, and the latest React 19 features through interactive examples
         </Typography>
         <Paper
           elevation={0}
@@ -199,8 +338,8 @@ const Home: React.FC = () => {
           }}
         >
           <Typography variant="body1" color="text.secondary">
-            🚀 Explore React hooks, patterns, and advanced concepts with hands-on examples. 
-            Click on any topic below to dive deep into the implementation and learn by doing!
+            🚀 Explore React hooks, design patterns, and cutting-edge features with hands-on examples. 
+            From basic hooks to advanced architectural patterns, this platform covers everything you need to become a React expert!
           </Typography>
         </Paper>
       </Box>
@@ -225,6 +364,8 @@ const Home: React.FC = () => {
             {category === 'Custom Hooks' && <CodeIcon />}
             {category === 'Advanced Patterns' && <BugReportIcon />}
             {category === 'Utility Concepts' && <PsychologyIcon />}
+            {category === 'Design Patterns' && <ArchitectureIcon />}
+            {category === 'React 19 Features' && <RocketIcon />}
             {category}
           </Typography>
           
@@ -304,7 +445,10 @@ const Home: React.FC = () => {
       {/* Footer */}
       <Box textAlign="center" mt={8} pt={4} borderTop={1} borderColor="divider">
         <Typography variant="body2" color="text.secondary">
-          Built with ❤️ using React, TypeScript, Material-UI, and Tailwind CSS
+          Built with ❤️ using React 19, TypeScript, Material-UI, and Tailwind CSS
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          Updated with the latest React 19 features and advanced design patterns
         </Typography>
       </Box>
     </Container>

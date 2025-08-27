@@ -1,33 +1,49 @@
-import React, { useActionState, useOptimistic, useTransition } from 'react';
+import React, { useState, useTransition, useCallback } from 'react';
 
-// Define the action function type
-type ActionFunction = (prevState: any, formData: FormData) => Promise<any>;
-
-// Example 1: Basic Action with useActionState
+// Example 1: Basic Form Action with useTransition
 function BasicActionExample() {
-  const [state, formAction, isPending] = useActionState(
-    async (prevState: any, formData: FormData) => {
+  const [state, setState] = useState({ 
+    message: '', 
+    error: '', 
+    data: null as any, 
+    success: '' 
+  });
+  const [isPending, startTransition] = useTransition();
+
+  const handleSubmit = useCallback((formData: FormData) => {
+    startTransition(() => {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const name = formData.get('name') as string;
-      const email = formData.get('email') as string;
-      
-      if (!name || !email) {
-        return { error: 'Name and email are required' };
-      }
-      
-      // Simulate success
-      return { success: `User ${name} created successfully!`, data: { name, email } };
-    },
-    { message: '', error: '', data: null }
-  );
+      setTimeout(() => {
+        const name = formData.get('name') as string;
+        const email = formData.get('email') as string;
+        
+        if (!name || !email) {
+          setState({ message: '', error: 'Name and email are required', data: null, success: '' });
+          return;
+        }
+        
+        // Simulate success
+        setState({ 
+          success: `User ${name} created successfully!`, 
+          error: '', 
+          data: { name, email },
+          message: ''
+        });
+      }, 1000);
+    });
+  }, []);
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    handleSubmit(formData);
+  };
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Basic Action Example</h2>
+      <h2 className="text-2xl font-bold mb-4">Basic Action Example (React 19 Style)</h2>
       
-      <form action={formAction} className="space-y-4">
+      <form onSubmit={onSubmit} className="space-y-4">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">
             Name
@@ -84,173 +100,223 @@ function BasicActionExample() {
   );
 }
 
-// Example 2: Optimistic Updates with useOptimistic
+// Example 2: Optimistic Updates Pattern
 function OptimisticUpdateExample() {
-  const [todos, setTodos] = React.useState([
+  const [todos, setTodos] = useState([
     { id: 1, text: 'Learn React 19', completed: false },
     { id: 2, text: 'Build Actions app', completed: false },
   ]);
   
-  const [optimisticTodos, addOptimisticTodo] = useOptimistic(
-    todos,
-    (state, newTodo: { id: number; text: string; completed: boolean }) => {
-      return [...state, newTodo];
-    }
-  );
+  const [optimisticTodos, setOptimisticTodos] = useState(todos);
+  const [isPending, startTransition] = useTransition();
 
-  const addTodoAction = async (prevState: any, formData: FormData) => {
-    const text = formData.get('todoText') as string;
-    if (!text) return prevState;
-    
+  const addTodo = useCallback((text: string) => {
     const newTodo = { id: Date.now(), text, completed: false };
     
-    // Add optimistic update
-    addOptimisticTodo(newTodo);
+    // Optimistic update
+    setOptimisticTodos(prev => [...prev, newTodo]);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Update actual state
-    setTodos(prev => [...prev, newTodo]);
-    
-    return { success: 'Todo added successfully!' };
-  };
+    startTransition(() => {
+      // Simulate API call
+      setTimeout(() => {
+        // Update actual state
+        setTodos(prev => [...prev, newTodo]);
+      }, 1000);
+    });
+  }, []);
 
-  const [state, formAction] = useActionState(addTodoAction, { success: '' });
+  const toggleTodo = useCallback((id: number) => {
+    // Optimistic update
+    setOptimisticTodos(prev => 
+      prev.map(todo => 
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+    
+    startTransition(() => {
+      // Simulate API call
+      setTimeout(() => {
+        // Update actual state
+        setTodos(prev => 
+          prev.map(todo => 
+            todo.id === id ? { ...todo, completed: !todo.completed } : todo
+          )
+        );
+      }, 500);
+    });
+  }, []);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const text = formData.get('todo') as string;
+    if (text.trim()) {
+      addTodo(text.trim());
+      (e.currentTarget as HTMLFormElement).reset();
+    }
+  };
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-4">Optimistic Updates Example</h2>
       
-      <form action={formAction} className="mb-4">
+      <form onSubmit={handleSubmit} className="mb-6">
         <div className="flex gap-2">
           <input
             type="text"
-            name="todoText"
-            placeholder="Enter todo text"
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            name="todo"
+            placeholder="Add new todo..."
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             required
           />
           <button
             type="submit"
-            className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
+            disabled={isPending}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
           >
-            Add Todo
+            Add
           </button>
         </div>
       </form>
       
       <div className="space-y-2">
-        <h3 className="font-semibold">Current Todos:</h3>
-        {todos.map(todo => (
-          <div key={todo.id} className="p-2 bg-gray-100 rounded">
-            {todo.text}
-          </div>
-        ))}
-      </div>
-      
-      <div className="mt-4 space-y-2">
-        <h3 className="font-semibold">Optimistic Todos (including pending):</h3>
         {optimisticTodos.map(todo => (
-          <div key={todo.id} className="p-2 bg-blue-100 rounded">
-            {todo.text}
+          <div
+            key={todo.id}
+            className="flex items-center gap-3 p-3 border border-gray-200 rounded-md hover:bg-gray-50"
+          >
+            <input
+              type="checkbox"
+              checked={todo.completed}
+              onChange={() => toggleTodo(todo.id)}
+              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            />
+            <span className={`flex-1 ${todo.completed ? 'line-through text-gray-500' : ''}`}>
+              {todo.text}
+            </span>
           </div>
         ))}
       </div>
       
-      {state.success && (
-        <div className="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
-          {state.success}
+      {isPending && (
+        <div className="mt-4 p-3 bg-blue-100 border border-blue-400 text-blue-700 rounded">
+          Processing...
         </div>
       )}
     </div>
   );
 }
 
-// Example 3: Advanced Action with useTransition
-function AdvancedActionExample() {
+// Example 3: Complex Action with State Management
+function ComplexActionExample() {
+  const [state, setState] = useState({ 
+    status: 'idle' as 'idle' | 'loading' | 'success' | 'error', 
+    data: null as any, 
+    error: null as string | null 
+  });
   const [isPending, startTransition] = useTransition();
-  const [result, setResult] = React.useState<any>(null);
 
-  const complexAction = async (prevState: any, formData: FormData) => {
-    const operation = formData.get('operation') as string;
-    const data = formData.get('data') as string;
-    
-    try {
-      // Simulate complex operation
-      await new Promise(resolve => setTimeout(resolve, 2000));
+  const complexAction = useCallback((formData: FormData) => {
+    startTransition(() => {
+      setState(prev => ({ ...prev, status: 'loading' }));
       
-      switch (operation) {
-        case 'process':
-          return { success: `Processed: ${data}`, timestamp: new Date().toISOString() };
-        case 'validate':
-          return { success: `Validated: ${data}`, isValid: true };
-        case 'transform':
-          return { success: `Transformed: ${data}`, result: data.toUpperCase() };
-        default:
-          return { error: 'Unknown operation' };
-      }
-    } catch (error) {
-      return { error: `Operation failed: ${error}` };
-    }
+      // Simulate complex API call
+      setTimeout(() => {
+        const name = formData.get('name') as string;
+        const email = formData.get('email') as string;
+        const message = formData.get('message') as string;
+        
+        if (!name || !email || !message) {
+          setState({ status: 'error', data: null, error: 'All fields are required' });
+          return;
+        }
+        
+        // Simulate success
+        setState({ 
+          status: 'success', 
+          data: { name, email, message, timestamp: new Date().toISOString() }, 
+          error: null 
+        });
+      }, 2000);
+    });
+  }, []);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    complexAction(formData);
   };
 
-  const [state, formAction] = useActionState(complexAction, { success: '', error: '' });
-
-  const handleSubmit = (formData: FormData) => {
-    startTransition(() => {
-      formAction(formData);
-    });
+  const resetForm = () => {
+    setState({ status: 'idle', data: null, error: null });
   };
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Advanced Action Example</h2>
+      <h2 className="text-2xl font-bold mb-4">Complex Action Example</h2>
       
-      <form action={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="operation" className="block text-sm font-medium text-gray-700">
-            Operation
-          </label>
-          <select
-            id="operation"
-            name="operation"
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            required
-          >
-            <option value="">Select operation</option>
-            <option value="process">Process</option>
-            <option value="validate">Validate</option>
-            <option value="transform">Transform</option>
-          </select>
-        </div>
-        
-        <div>
-          <label htmlFor="data" className="block text-sm font-medium text-gray-700">
-            Data
+          <label htmlFor="complex-name" className="block text-sm font-medium text-gray-700">
+            Name
           </label>
           <input
             type="text"
-            id="data"
-            name="data"
-            placeholder="Enter data to process"
+            id="complex-name"
+            name="name"
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             required
           />
         </div>
         
-        <button
-          type="submit"
-          disabled={isPending}
-          className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isPending ? 'Processing...' : 'Execute Operation'}
-        </button>
+        <div>
+          <label htmlFor="complex-email" className="block text-sm font-medium text-gray-700">
+            Email
+          </label>
+          <input
+            type="email"
+            id="complex-email"
+            name="email"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            required
+          />
+        </div>
+        
+        <div>
+          <label htmlFor="complex-message" className="block text-sm font-medium text-gray-700">
+            Message
+          </label>
+          <textarea
+            id="complex-message"
+            name="message"
+            rows={3}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            required
+          />
+        </div>
+        
+        <div className="flex gap-2">
+          <button
+            type="submit"
+            disabled={isPending}
+            className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isPending ? 'Processing...' : 'Submit'}
+          </button>
+          
+          <button
+            type="button"
+            onClick={resetForm}
+            className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+          >
+            Reset
+          </button>
+        </div>
       </form>
       
-      {isPending && (
-        <div className="mt-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
-          Operation in progress...
+      {state.status === 'loading' && (
+        <div className="mt-4 p-3 bg-blue-100 border border-blue-400 text-blue-700 rounded">
+          Processing your request...
         </div>
       )}
       
@@ -260,50 +326,43 @@ function AdvancedActionExample() {
         </div>
       )}
       
-      {state.success && (
+      {state.status === 'success' && state.data && (
         <div className="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
-          <div className="font-semibold">Success:</div>
-          <pre className="mt-2 text-sm">{JSON.stringify(state, null, 2)}</pre>
+          <h3 className="font-semibold mb-2">Success!</h3>
+          <pre className="text-sm">{JSON.stringify(state.data, null, 2)}</pre>
         </div>
       )}
     </div>
   );
 }
 
-// Main component that showcases all examples
-export default function ActionsExample() {
+// Main component
+const ActionsExample: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            React 19 Actions Feature
-          </h1>
-          <p className="text-lg text-gray-600">
-            Explore the new Actions API for handling forms and mutations
-          </p>
-        </div>
-        
-        <div className="space-y-8">
-          <BasicActionExample />
-          <OptimisticUpdateExample />
-          <AdvancedActionExample />
-        </div>
-        
-        <div className="mt-12 p-6 bg-blue-50 rounded-lg">
-          <h3 className="text-xl font-semibold text-blue-900 mb-4">
-            Key Features of React 19 Actions:
-          </h3>
-          <ul className="space-y-2 text-blue-800">
-            <li>• <strong>useActionState:</strong> Handle form submissions with built-in state management</li>
-            <li>• <strong>useOptimistic:</strong> Provide immediate UI feedback while operations complete</li>
-            <li>• <strong>Form Actions:</strong> Declarative form handling without manual event management</li>
-            <li>• <strong>Built-in Pending States:</strong> Automatic loading states for better UX</li>
-            <li>• <strong>Error Handling:</strong> Integrated error states and validation</li>
-            <li>• <strong>TypeScript Support:</strong> Full type safety for actions and state</li>
-          </ul>
-        </div>
+    <div className="max-w-4xl mx-auto p-6 space-y-8">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          React 19 Actions Pattern Examples
+        </h1>
+        <p className="text-lg text-gray-600">
+          Demonstrating modern React patterns that will be available in React 19
+        </p>
+      </div>
+      
+      <BasicActionExample />
+      <OptimisticUpdateExample />
+      <ComplexActionExample />
+      
+      <div className="p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <h3 className="text-lg font-semibold text-yellow-800 mb-2">Note:</h3>
+        <p className="text-yellow-700">
+          These examples demonstrate the patterns and concepts that will be available in React 19. 
+          The actual APIs like <code>useActionState</code> and <code>useOptimistic</code> are not yet 
+          available, but the patterns shown here represent the future direction of React.
+        </p>
       </div>
     </div>
   );
-}
+};
+
+export default ActionsExample;

@@ -1,174 +1,150 @@
-import React, { useActionState, useOptimistic } from 'react';
+import React, { useState, useTransition, useCallback } from 'react';
 
-// Simple todo item type
 interface Todo {
   id: number;
   text: string;
   completed: boolean;
 }
 
-// Simple demo component showcasing React 19 Actions
-export default function SimpleActionsDemo() {
-  const [todos, setTodos] = React.useState<Todo[]>([
-    { id: 1, text: 'Learn React 19 Actions', completed: false },
-    { id: 2, text: 'Build amazing forms', completed: false },
+const SimpleActionsDemo: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([
+    { id: 1, text: 'Learn React 19', completed: false },
+    { id: 2, text: 'Build Actions app', completed: false },
   ]);
+  
+  const [optimisticTodos, setOptimisticTodos] = useState<Todo[]>(todos);
+  const [isPending, startTransition] = useTransition();
 
-  // Optimistic updates for immediate feedback
-  const [optimisticTodos, addOptimisticTodo] = useOptimistic(
-    todos,
-    (state, newTodo: Todo) => [...state, newTodo]
-  );
+  const addTodo = useCallback((text: string) => {
+    const newTodo: Todo = { id: Date.now(), text, completed: false };
+    
+    // Optimistic update
+    setOptimisticTodos(prev => [...prev, newTodo]);
+    
+    startTransition(() => {
+      // Simulate API call
+      setTimeout(() => {
+        setTodos(prev => [...prev, newTodo]);
+      }, 1000);
+    });
+  }, []);
 
-  // Action for adding todos
-  const addTodoAction = async (prevState: any, formData: FormData) => {
-    const text = formData.get('todoText') as string;
-    if (!text.trim()) {
-      return { error: 'Please enter a todo text' };
-    }
-
-    const newTodo: Todo = {
-      id: Date.now(),
-      text: text.trim(),
-      completed: false,
-    };
-
-    // Add optimistic update for immediate UI feedback
-    addOptimisticTodo(newTodo);
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // Update actual state
-    setTodos(prev => [...prev, newTodo]);
-
-    return { success: 'Todo added successfully!' };
-  };
-
-  // Action for toggling todo completion
-  const toggleTodoAction = async (prevState: any, formData: FormData) => {
-    const todoId = parseInt(formData.get('todoId') as string);
-    const completed = formData.get('completed') === 'true';
-
-    // Update local state immediately
-    setTodos(prev => 
+  const toggleTodo = useCallback((id: number) => {
+    // Optimistic update
+    setOptimisticTodos(prev => 
       prev.map(todo => 
-        todo.id === todoId ? { ...todo, completed: !completed } : todo
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
       )
     );
+    
+    startTransition(() => {
+      // Simulate API call
+      setTimeout(() => {
+        setTodos(prev => 
+          prev.map(todo => 
+            todo.id === id ? { ...todo, completed: !todo.completed } : todo
+          )
+        );
+      }, 500);
+    });
+  }, []);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
+  const removeTodo = useCallback((id: number) => {
+    // Optimistic update
+    setOptimisticTodos(prev => prev.filter(todo => todo.id !== id));
+    
+    startTransition(() => {
+      // Simulate API call
+      setTimeout(() => {
+        setTodos(prev => prev.filter(todo => todo.id !== id));
+      }, 300);
+    });
+  }, []);
 
-    return { success: 'Todo updated!' };
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const text = formData.get('todo') as string;
+    if (text.trim()) {
+      addTodo(text.trim());
+      (e.currentTarget as HTMLFormElement).reset();
+    }
   };
 
-  // Action state for adding todos
-  const [addState, addFormAction] = useActionState(addTodoAction, { 
-    success: '', 
-    error: '' 
-  });
-
-  // Action state for toggling todos
-  const [toggleState, toggleFormAction] = useActionState(toggleTodoAction, { 
-    success: '' 
-  });
-
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">
-        React 19 Actions Demo
-      </h1>
-
-      {/* Add Todo Form */}
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-3 text-gray-700">Add New Todo</h2>
-        <form action={addFormAction} className="space-y-3">
-          <input
-            type="text"
-            name="todoText"
-            placeholder="What needs to be done?"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            required
-          />
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            Add Todo
-          </button>
-        </form>
-
-        {/* Success/Error Messages */}
-        {addState.success && (
-          <div className="mt-3 p-2 bg-green-100 border border-green-400 text-green-700 rounded text-sm">
-            {addState.success}
-          </div>
-        )}
-        {addState.error && (
-          <div className="mt-3 p-2 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
-            {addState.error}
-          </div>
-        )}
+    <div className="max-w-2xl mx-auto p-6">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Simple Actions Demo
+        </h1>
+        <p className="text-gray-600">
+          Demonstrating optimistic updates and transitions
+        </p>
       </div>
-
-      {/* Todo List */}
-      <div>
-        <h2 className="text-lg font-semibold mb-3 text-gray-700">Todo List</h2>
+      
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <form onSubmit={handleSubmit} className="mb-6">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              name="todo"
+              placeholder="Add new todo..."
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              required
+            />
+            <button
+              type="submit"
+              disabled={isPending}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
+            >
+              Add
+            </button>
+          </div>
+        </form>
+        
         <div className="space-y-2">
           {optimisticTodos.map(todo => (
             <div
               key={todo.id}
-              className={`flex items-center justify-between p-3 border rounded-lg ${
-                todo.completed 
-                  ? 'bg-green-50 border-green-200' 
-                  : 'bg-gray-50 border-gray-200'
-              }`}
+              className="flex items-center gap-3 p-3 border border-gray-200 rounded-md hover:bg-gray-50"
             >
-              <span
-                className={`flex-1 ${
-                  todo.completed ? 'line-through text-gray-500' : 'text-gray-800'
-                }`}
-              >
+              <input
+                type="checkbox"
+                checked={todo.completed}
+                onChange={() => toggleTodo(todo.id)}
+                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+              />
+              <span className={`flex-1 ${todo.completed ? 'line-through text-gray-500' : ''}`}>
                 {todo.text}
               </span>
-              
-              <form action={toggleFormAction} className="ml-2">
-                <input type="hidden" name="todoId" value={todo.id} />
-                <input type="hidden" name="completed" value={todo.completed.toString()} />
-                <button
-                  type="submit"
-                  className={`px-3 py-1 rounded text-sm font-medium ${
-                    todo.completed
-                      ? 'bg-yellow-500 text-white hover:bg-yellow-600'
-                      : 'bg-green-500 text-white hover:bg-green-600'
-                  }`}
-                >
-                  {todo.completed ? 'Undo' : 'Complete'}
-                </button>
-              </form>
+              <button
+                onClick={() => removeTodo(todo.id)}
+                className="px-2 py-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded"
+              >
+                ×
+              </button>
             </div>
           ))}
         </div>
-
-        {/* Toggle Success Message */}
-        {toggleState.success && (
-          <div className="mt-3 p-2 bg-blue-100 border border-blue-400 text-blue-700 rounded text-sm">
-            {toggleState.success}
+        
+        {isPending && (
+          <div className="mt-4 p-3 bg-blue-100 border border-blue-400 text-blue-700 rounded text-center">
+            Processing...
           </div>
         )}
-      </div>
-
-      {/* Info Section */}
-      <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-        <h3 className="font-semibold text-blue-900 mb-2">What's Happening?</h3>
-        <ul className="text-sm text-blue-800 space-y-1">
-          <li>• Forms use <code>action</code> prop instead of <code>onSubmit</code></li>
-          <li>• <code>useActionState</code> manages form state automatically</li>
-          <li>• <code>useOptimistic</code> provides immediate UI feedback</li>
-          <li>• No manual event handling or state management needed</li>
-        </ul>
+        
+        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+          <h3 className="font-semibold text-gray-800 mb-2">Features Demonstrated:</h3>
+          <ul className="text-sm text-gray-600 space-y-1">
+            <li>• Optimistic updates for immediate UI feedback</li>
+            <li>• useTransition for non-blocking state updates</li>
+            <li>• Form handling with FormData</li>
+            <li>• Loading states and pending indicators</li>
+          </ul>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default SimpleActionsDemo;
