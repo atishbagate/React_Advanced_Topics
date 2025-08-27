@@ -2,7 +2,7 @@ import React from 'react'
 import ComponentDidMount from './mountingPhase'
 
 
-function Index() {
+const Index = () => {
     return (
         <>
             <h2>This is the Topic for React Lifecycle detailed topic.</h2>
